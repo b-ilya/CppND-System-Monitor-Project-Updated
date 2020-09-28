@@ -1,16 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(monitor)
 
-if(WIN32 OR MSVC)
-        add_subdirectory(C:\Users\Ilya\Projects\Sources\github\PDCurses)
-        target_link_libraries(monitor
-                PRIVATE
-                PDcursesWin
-        )
-else()
-    find_package(Curses REQUIRED)
-    include_directories(${CURSES_INCLUDE_DIRS})
-endif()
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIRS})
 
 include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
