@@ -7,7 +7,7 @@
 #include "system.h"
 
 namespace NCursesDisplay {
-void Display(const System& system, int n = 10);
+void Display(System& system);
 void DisplaySystem(const System& system, WINDOW* window);
 void DisplayProcesses(const std::vector<Process>& processes, WINDOW* window,
                       int n);

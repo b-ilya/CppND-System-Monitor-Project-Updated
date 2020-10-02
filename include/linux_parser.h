@@ -1,13 +1,16 @@
 #ifndef SYSTEM_PARSER_H
 #define SYSTEM_PARSER_H
 
+
+#include <iostream>
 #include <fstream>
 #include <regex>
 #include <string>
 
+
 namespace LinuxParser {
 // Paths
-const std::string kProcDirectory{"/proc"};
+const std::string kProcDirectory{"/proc/"};
 const std::string kCmdlineFilename{"/cmdline"};
 const std::string kCpuinfoFilename{"/cpuinfo"};
 const std::string kStatusFilename{"/status"};
@@ -17,6 +20,8 @@ const std::string kMeminfoFilename{"/meminfo"};
 const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
+
+void skip(std::istream&, int);
 
 // System
 float MemoryUtilization();
@@ -40,18 +45,20 @@ enum CPUStates {
   kGuest_,
   kGuestNice_
 };
-std::vector<std::string> CpuUtilization();
-long Jiffies();
-long ActiveJiffies();
-long ActiveJiffies(int pid);
-long IdleJiffies();
+std::vector<long> CpuUtilization();
 
 // Processes
-std::string Command(int pid);
-std::string Ram(int pid);
-std::string Uid(int pid);
-std::string User(int pid);
-long int UpTime(int pid);
-};  // namespace LinuxParser
+struct UserName {
+  UserName(int uid, std::string name);
+  int uid;
+  std::string name;
+};
 
-#endif
+std::string Command(int pid);
+int Ram(int pid);
+int Uid(int pid);
+std::string User(int pid);
+long ActiveJiffies(int pid);
+}; 
+
+#endif //SYSTEM_PARSER_H

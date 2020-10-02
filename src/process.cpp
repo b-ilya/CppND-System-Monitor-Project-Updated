@@ -1,9 +1,11 @@
 #include "process.h"
+#include "linux_parser.h"
 
 #include <unistd.h>
 
 #include <cctype>
 #include <sstream>
+#include <iomanip>
 #include <string>
 #include <vector>
 
@@ -11,26 +13,38 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-// TODO: Return this process's ID
-int Process::Pid() const { return 0; }
+Process::Process(int pid): pid(pid), userName(LinuxParser::User(pid)), command(LinuxParser::Command(pid)) { Update(0); }
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() const { return 0; }
-
-// TODO: Return the command that generated this process
-string Process::Command() const { return string(); }
-
-// TODO: Return this process's memory utilization
-string Process::Ram() const { return string(); }
-
-// TODO: Return the user (name) that generated this process
-string Process::User() const { return string(); }
-
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() const { return 0; }
-
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a [[maybe_unused]]) const {
-  return true;
+void Process::Update(long jiffsDelta) { 
+  updateCpu(jiffsDelta);
+  updateMemory();
 }
+
+void Process::updateMemory() {
+  // convert number of bytes to string '<x> MB'
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(2) << std::setw(7)
+         << (LinuxParser::Ram(pid) * 0.000001);
+  memLoad = stream.str();
+}
+
+void Process::updateCpu(long jiffsDelta) {
+  long curJiffsTotal = LinuxParser::ActiveJiffies(pid);
+  cpuLoad = 1.0 * (curJiffsTotal - prevJiffsTotal) / jiffsDelta;
+  prevJiffsTotal = curJiffsTotal;
+  cpuTime = curJiffsTotal / sysconf(_SC_CLK_TCK);
+}
+
+int Process::Pid() const { return pid; }
+
+float Process::CpuUtilization() const { return cpuLoad; }
+
+string Process::Command() const { return command; }
+
+string Process::Ram() const { return memLoad; }
+
+string Process::User() const { return userName; }
+
+long Process::CpuTime() const { return cpuTime; }
+
+bool Process::operator<(Process const& a) const { return cpuLoad < a.cpuLoad; }

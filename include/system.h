@@ -9,6 +9,9 @@
 
 class System {
  public:
+  System();
+  void Update();
+
   const Processor& Cpu() const;                   // TODO: See src/system.cpp
   const std::vector<Process>& Processes() const;  // TODO: See src/system.cpp
   float MemoryUtilization() const;
@@ -20,8 +23,14 @@ class System {
 
   // TODO: Define any necessary private members
  private:
-  Processor cpu_ = {};
-  std::vector<Process> processes_ = {};
+  Processor cpu{};
+  std::vector<Process> processes{};
+  long uptime;
+  float memLoad;
+  int totalProc;
+  int runningProc;
+  std::string kernelName;
+  std::string osName;
 };
 
 #endif

@@ -1,12 +1,17 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
+#include <vector>
+
 class Processor {
  public:
-  float Utilization() const;  // TODO: See src/processor.cpp
+  Processor();
+  long Update();
+  float Utilization() const;
 
-  // TODO: Declare any necessary private members
  private:
+  float utilization{0};
+  std::vector<long> lastTotalJiffies{};
 };
 
 #endif
