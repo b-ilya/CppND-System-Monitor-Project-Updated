@@ -1,6 +1,12 @@
 #include "linux_parser.h"
 
-#include <filesystem>
+#if defined(__cpp_lib_filesystem)
+  #include <filesystem>
+  namespace fs = std::filesystem;
+#else
+  #include <dirent.h>
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,7 +17,6 @@ using std::stol;
 using std::string;
 using std::to_string;
 using std::vector;
-namespace fs = std::filesystem;
 
 void LinuxParser::skip(std::istream& istream, int count) {
   string skip;
@@ -57,17 +62,36 @@ string LinuxParser::Kernel() {
 // Returns vector of process IDs
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
+#if defined(__cpp_lib_filesystem) 
   fs::path procPath(kProcDirectory);
   if (fs::exists(procPath) && fs::is_directory(procPath)) {
     for (const auto& entry : fs::directory_iterator(procPath)) {
       if (fs::is_directory(entry.status())) {
-        auto dirName = entry.path().filename().generic_string();
-        if (std::all_of(dirName.begin(), dirName.end(), isdigit)) {
+        auto dirName = entry.path().filename().string();
+        if (!dirName.empty() &&
+            std::all_of(dirName.begin(), dirName.end(), isdigit)) {
           pids.push_back(std::stoi(dirName));
         }
       }
     }
   }
+#else
+  DIR* directory = opendir(kProcDirectory.c_str());
+  struct dirent* file;
+  while ((file = readdir(directory)) != nullptr) {
+    // Is this a directory?
+    if (file->d_type == DT_DIR) {
+      // Is every character of the name a digit?
+      string filename(file->d_name);
+      if (std::all_of(filename.begin(), filename.end(), isdigit)) {
+        int pid = stoi(filename);
+        pids.push_back(pid);
+      }
+    }
+  }
+  closedir(directory);
+
+#endif
   return pids;
 }
 

@@ -23,7 +23,7 @@ void Process::Update(long jiffsDelta) {
 void Process::updateMemory() {
   // convert number of bytes to string '<x> MB'
   std::stringstream stream;
-  stream << std::fixed << std::setprecision(2) << std::setw(7)
+  stream << std::fixed << std::setprecision(1) << std::setw(7)
          << (LinuxParser::Ram(pid) * 0.000001);
   memLoad = stream.str();
 }
@@ -47,4 +47,4 @@ string Process::User() const { return userName; }
 
 long Process::CpuTime() const { return cpuTime; }
 
-bool Process::operator<(Process const& a) const { return cpuLoad < a.cpuLoad; }
+bool Process::operator<(Process const& a) const { return cpuLoad > a.cpuLoad; }

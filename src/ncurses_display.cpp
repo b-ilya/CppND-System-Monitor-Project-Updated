@@ -72,18 +72,14 @@ void NCursesDisplay::DisplayProcesses(const std::vector<Process>& processes,
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
 
-  //if (n > processes.size()) {
-  //  n = processes.size();
-  //}
-
   for (int i = 0; i < n; ++i) {
     if (i >= processes.size()) {
-      mvwprintw(window, ++row, pid_column,  "--     ");
-      mvwprintw(window, row, user_column, "--        ");
-      mvwprintw(window, row, cpu_column, "--      ");
-      mvwprintw(window, row, ram_column, "     --  ");
-      mvwprintw(window, row, time_column, "--        ");
-      mvwprintw(window, row, command_column, "--                                                                                                             ");
+      mvwprintw(window, ++row, pid_column, "--");
+      mvwprintw(window, row, user_column, "--");
+      mvwprintw(window, row, cpu_column, "--");
+      mvwprintw(window, row, ram_column, "     --");
+      mvwprintw(window, row, time_column, "--");
+      mvwprintw(window, row, command_column, "--");
     } else {
         mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
         mvwprintw(window, row, user_column, processes[i].User().c_str());
@@ -113,6 +109,10 @@ void NCursesDisplay::Display(System& system) {
 
   while (1) {
     system.Update();
+
+    werase(system_window);
+    werase(process_window);
+
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     box(system_window, 0, 0);

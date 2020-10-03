@@ -6,6 +6,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "linux_parser.h"
 #include "process.h"
@@ -46,7 +47,7 @@ void System::Update() {
       newProcesses.push_back(process);
     }
   }
-  processes.clear();
+  std::sort(newProcesses.begin(), newProcesses.end());
   processes = newProcesses;
 }
 
