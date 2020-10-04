@@ -55,7 +55,7 @@ struct UserName {
 
 // Processes
 std::string Command(int pid);
-int Ram(int pid);
+long RamkB(int pid);
 int Uid(int pid);
 std::string User(int pid);
 long ActiveJiffies(int pid);

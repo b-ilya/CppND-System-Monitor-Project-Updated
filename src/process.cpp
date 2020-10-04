@@ -27,10 +27,10 @@ void Process::Update(long jiffsDelta) {
 }
 
 void Process::updateMemory() {
-  // convert number of bytes to string '<x> MB'
+  // convert number of kiloytes to string with number of megabytes
   std::stringstream stream;
   stream << std::fixed << std::setprecision(1) << std::setw(7)
-         << (LinuxParser::Ram(pid) * 0.000001);
+         << (LinuxParser::RamkB(pid) * 0.001);
   memLoad = stream.str();
 }
 

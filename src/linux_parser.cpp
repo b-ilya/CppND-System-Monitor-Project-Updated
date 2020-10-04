@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 using std::stof;
 using std::stol;
@@ -190,10 +191,10 @@ string LinuxParser::Command(int pid) {
   return line;
 }
 
-int LinuxParser::Ram(int pid) {
+long LinuxParser::RamkB(int pid) {
   string line;
   string key;
-  int value;
+  long value;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) +
                            kStatusFilename);
   if (filestream.is_open()) {
@@ -202,7 +203,7 @@ int LinuxParser::Ram(int pid) {
       linestream >> key;
       if (key == "VmSize:") {
         linestream >> value;
-        return value * 1000;
+        return value;
       }
     }
   }
@@ -230,15 +231,12 @@ int LinuxParser::Uid(int pid) {
 
 LinuxParser::UserName::UserName(int uid, string name) : uid(uid), name(name) {}
 
-std::vector<LinuxParser::UserName> userNames{};
+std::unordered_map<int, string> userNames{};
 
 string LinuxParser::User(int pid) {
   int uid = Uid(pid);
-  for (auto& userRecord : userNames) {
-    if (userRecord.uid == uid) {
-      return userRecord.name;
-    }
-  }
+  auto userName = userNames.find(pid);
+  if (userName != userNames.end()) { return userName->second; }
 
   std::ifstream filestream(kPasswordPath);
   string line;
@@ -253,7 +251,7 @@ string LinuxParser::User(int pid) {
       linestream >> skip;
       linestream >> id;
       if (id == uid) {
-        userNames.push_back(UserName(id, name));
+        userNames[id] = name;
         return name;
       }
     }
