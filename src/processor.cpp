@@ -12,7 +12,7 @@ long Processor::Update() {
   auto currentJiffies = LinuxParser::CpuUtilization();
   auto deltas = currentJiffies;
   if (!lastTotalJiffies.empty()) {
-    for (int i = 0; i < lastTotalJiffies.size(); i++) {
+    for (unsigned i = 0; i < lastTotalJiffies.size(); i++) {
       deltas[i] = deltas[i] - lastTotalJiffies[i];
     }
   }

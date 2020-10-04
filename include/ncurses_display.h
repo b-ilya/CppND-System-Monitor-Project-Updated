@@ -10,7 +10,7 @@ namespace NCursesDisplay {
 void Display(System& system);
 void DisplaySystem(const System& system, WINDOW* window);
 void DisplayProcesses(const std::vector<Process>& processes, WINDOW* window,
-                      int n);
+                      unsigned n);
 std::string ProgressBar(float percent);
 };  // namespace NCursesDisplay
 

@@ -55,7 +55,7 @@ void NCursesDisplay::DisplaySystem(const System& system, WINDOW* window) {
 }
 
 void NCursesDisplay::DisplayProcesses(const std::vector<Process>& processes,
-                                      WINDOW* window, int n) {
+                                      WINDOW* window, unsigned n) {
   int row{0};
   int const pid_column{2};
   int const user_column{9};
@@ -72,7 +72,7 @@ void NCursesDisplay::DisplayProcesses(const std::vector<Process>& processes,
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
 
-  for (int i = 0; i < n; ++i) {
+  for (unsigned i = 0; i < n; ++i) {
     if (i >= processes.size()) {
       mvwprintw(window, ++row, pid_column, "--");
       mvwprintw(window, row, user_column, "--");
@@ -103,7 +103,7 @@ void NCursesDisplay::Display(System& system) {
 
   int x_max{getmaxx(stdscr)};
   int y_max{getmaxy(stdscr)};
-  int n = y_max - 12;
+  unsigned n = y_max - 12;
   WINDOW* system_window = newwin(9, x_max, 0, 0);
   WINDOW* process_window = newwin(3 + n, x_max, system_window->_maxy + 1, 0);
 
