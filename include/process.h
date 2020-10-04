@@ -19,7 +19,7 @@ class Process {
   bool operator<(Process const& a) const;
 
  private:
-  //fixed state
+  // fixed state
   int pid;
   std::string userName;
   std::string command;
@@ -28,7 +28,7 @@ class Process {
   long cpuTime;
   std::string memLoad;
   float cpuLoad;
-  //private methods
+  // private methods
   void updateCpu(long);
   void updateMemory();
 };

@@ -1,12 +1,10 @@
 #ifndef SYSTEM_PARSER_H
 #define SYSTEM_PARSER_H
 
-
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <regex>
 #include <string>
-
 
 namespace LinuxParser {
 // Paths
@@ -21,6 +19,7 @@ const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
+// usefull function to skip input stream tokens
 void skip(std::istream&, int);
 
 // System
@@ -47,18 +46,19 @@ enum CPUStates {
 };
 std::vector<long> CpuUtilization();
 
-// Processes
+// Used to store cached UID-username pairs
 struct UserName {
   UserName(int uid, std::string name);
   int uid;
   std::string name;
 };
 
+// Processes
 std::string Command(int pid);
 int Ram(int pid);
 int Uid(int pid);
 std::string User(int pid);
 long ActiveJiffies(int pid);
-}; 
+};  // namespace LinuxParser
 
-#endif //SYSTEM_PARSER_H
+#endif  // SYSTEM_PARSER_H

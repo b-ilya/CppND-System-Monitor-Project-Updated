@@ -1,6 +1,8 @@
 #include "processor.h"
-#include "linux_parser.h"
+
 #include <vector>
+
+#include "linux_parser.h"
 
 using LinuxParser::CPUStates;
 

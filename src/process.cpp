@@ -1,21 +1,27 @@
 #include "process.h"
-#include "linux_parser.h"
 
 #include <unistd.h>
 
 #include <cctype>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
+
+#include "linux_parser.h"
 
 using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid): pid(pid), userName(LinuxParser::User(pid)), command(LinuxParser::Command(pid)) { Update(0); }
+Process::Process(int pid)
+    : pid(pid),
+      userName(LinuxParser::User(pid)),
+      command(LinuxParser::Command(pid)) {
+  Update(0);
+}
 
-void Process::Update(long jiffsDelta) { 
+void Process::Update(long jiffsDelta) {
   updateCpu(jiffsDelta);
   updateMemory();
 }

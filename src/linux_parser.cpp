@@ -1,16 +1,17 @@
 #include "linux_parser.h"
 
 #if defined(__cpp_lib_filesystem)
-  #include <filesystem>
-  namespace fs = std::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 #else
-  #include <dirent.h>
+#include <dirent.h>
 #endif
+
+#include <unistd.h>
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unistd.h>
 
 using std::stof;
 using std::stol;
@@ -20,10 +21,9 @@ using std::vector;
 
 void LinuxParser::skip(std::istream& istream, int count) {
   string skip;
-  for (int i = 0; i<count; i++, istream >> skip);
+  for (int i = 0; i < count; i++) istream >> skip;
 }
 
-// Reads and returns OS name
 string LinuxParser::OperatingSystem() {
   string line;
   string key;
@@ -46,7 +46,6 @@ string LinuxParser::OperatingSystem() {
   return value;
 }
 
-// Reads and returns kernel's identificator
 string LinuxParser::Kernel() {
   string skip, kernel;
   string line;
@@ -59,10 +58,9 @@ string LinuxParser::Kernel() {
   return kernel;
 }
 
-// Returns vector of process IDs
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
-#if defined(__cpp_lib_filesystem) 
+#if defined(__cpp_lib_filesystem)
   fs::path procPath(kProcDirectory);
   if (fs::exists(procPath) && fs::is_directory(procPath)) {
     for (const auto& entry : fs::directory_iterator(procPath)) {
@@ -79,9 +77,7 @@ vector<int> LinuxParser::Pids() {
   DIR* directory = opendir(kProcDirectory.c_str());
   struct dirent* file;
   while ((file = readdir(directory)) != nullptr) {
-    // Is this a directory?
     if (file->d_type == DT_DIR) {
-      // Is every character of the name a digit?
       string filename(file->d_name);
       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
         int pid = stoi(filename);
@@ -95,7 +91,6 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// Reads and returns the system memory utilization
 float LinuxParser::MemoryUtilization() {
   string line;
   string key;
@@ -119,7 +114,6 @@ float LinuxParser::MemoryUtilization() {
   return 0;
 }
 
-// Reads and returns the system uptime
 long LinuxParser::UpTime() {
   string uptime{"0"};
   string line;
@@ -131,7 +125,6 @@ long LinuxParser::UpTime() {
   }
   return stol(uptime);
 }
-
 
 vector<long> LinuxParser::CpuUtilization() {
   vector<long> jiffies = {};
@@ -152,7 +145,6 @@ vector<long> LinuxParser::CpuUtilization() {
   return jiffies;
 }
 
-// Reads and returns the total number of processes
 int LinuxParser::TotalProcesses() {
   string line;
   string key;
@@ -171,7 +163,6 @@ int LinuxParser::TotalProcesses() {
   return 0;
 }
 
-// Reads and returns the number of running processes
 int LinuxParser::RunningProcesses() {
   string line;
   string key;
@@ -190,7 +181,7 @@ int LinuxParser::RunningProcesses() {
   return 0;
 }
 
-string LinuxParser::Command(int pid) { 
+string LinuxParser::Command(int pid) {
   string line;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
   if (stream.is_open()) {
@@ -218,11 +209,12 @@ int LinuxParser::Ram(int pid) {
   return 0;
 }
 
-int LinuxParser::Uid(int pid) { 
+int LinuxParser::Uid(int pid) {
   string line;
   string key;
   int value;
-  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) +
+                           kStatusFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
@@ -240,7 +232,7 @@ LinuxParser::UserName::UserName(int uid, string name) : uid(uid), name(name) {}
 
 std::vector<LinuxParser::UserName> userNames{};
 
-string LinuxParser::User(int pid) { 
+string LinuxParser::User(int pid) {
   int uid = Uid(pid);
   for (auto& userRecord : userNames) {
     if (userRecord.uid == uid) {
@@ -269,13 +261,14 @@ string LinuxParser::User(int pid) {
   return string();
 }
 
-long LinuxParser::ActiveJiffies(int pid) { 
+long LinuxParser::ActiveJiffies(int pid) {
   string line;
   long utime;
   long stime;
   long cutime;
   long cstime;
-  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) +
+                           kStatFilename);
   if (filestream.is_open()) {
     std::getline(filestream, line);
     std::istringstream linestream(line);

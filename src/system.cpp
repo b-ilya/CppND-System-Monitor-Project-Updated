@@ -1,12 +1,13 @@
 #include "system.h"
 
 #include <unistd.h>
-#include <iostream>
+
+#include <algorithm>
 #include <cstddef>
+#include <iostream>
 #include <set>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include "linux_parser.h"
 #include "process.h"
@@ -17,7 +18,11 @@ using std::size_t;
 using std::string;
 using std::vector;
 
-System::System(): kernelName(LinuxParser::Kernel()), osName(LinuxParser::OperatingSystem()) { Update(); }
+System::System()
+    : kernelName(LinuxParser::Kernel()),
+      osName(LinuxParser::OperatingSystem()) {
+  Update();
+}
 
 void System::Update() {
   uptime = LinuxParser::UpTime();
@@ -51,26 +56,18 @@ void System::Update() {
   processes = newProcesses;
 }
 
-// Return the system's CPU
 const Processor& System::Cpu() const { return cpu; }
 
-// Return a container composed of the system's processes
 const vector<Process>& System::Processes() const { return processes; }
 
-// Return the system's kernel identifier (string)
 std::string System::Kernel() const { return kernelName; }
 
-// Returns the system's memory utilization
 float System::MemoryUtilization() const { return memLoad; }
 
-// Returns the operating system name
 std::string System::OperatingSystem() const { return osName; }
 
-// Returns the number of processes actively running on the system
 int System::RunningProcesses() const { return runningProc; }
 
-// Returna the total number of processes on the system
 int System::TotalProcesses() const { return totalProc; }
 
-// Returns the number of seconds since the system started running
 long int System::UpTime() const { return uptime; }
